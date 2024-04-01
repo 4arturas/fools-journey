@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "./globals.css";
+// import "./globals.css";
 import {Example2} from "@/app/example2/Example2";
 import {Example} from "@/app/example/Example";
 
