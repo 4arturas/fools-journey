@@ -6,24 +6,26 @@ import {DndContext} from '@dnd-kit/core';
 import {Droppable} from './Droppable';
 import {Draggable} from './Draggable';
 
-export function Example2() {
-    const [isDropped, setIsDropped] = useState(false);
-    const draggableMarkup = (
-        <Draggable>Drag me</Draggable>
-    );
+export function Example2()
+{
+const [parent, setParent] = useState(null);
 
-    return (
-        <DndContext onDragEnd={handleDragEnd}>
-            {!isDropped ? draggableMarkup : null}
-            <Droppable>
-                {isDropped ? draggableMarkup : 'Drop here'}
-            </Droppable>
-        </DndContext>
-    );
+const draggable = (
+    <Draggable id="draggable">
+        Go ahead, drag me.
+    </Draggable>
+);
 
-    function handleDragEnd(event) {
-        if (event.over && event.over.id === 'droppable') {
-            setIsDropped(true);
-        }
-    }
+return (
+    <DndContext onDragEnd={handleDragEnd}>
+        {!parent ? draggable : null}
+        <Droppable id="droppable">
+            {parent === "droppable" ? draggable : 'Drop here'}
+        </Droppable>
+    </DndContext>
+);
+
+function handleDragEnd({over}) {
+    setParent(over ? over.id : null);
+}
 }
