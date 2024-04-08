@@ -20,10 +20,10 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         {/*<Example/>*/}
-        <Example2/>
-        <br/><br/><br/><br/>
-        <br/><br/><br/><br/>
-        <br/><br/><br/><br/>
+        {/*<Example2/>*/}
+        {/*<br/><br/><br/><br/>*/}
+        {/*<br/><br/><br/><br/>*/}
+        {/*<br/><br/><br/><br/>*/}
         {children}
       </body>
     </html>

@@ -15,6 +15,10 @@ export function Example() {
         </Draggable>
     );
 
+    function handleDragEnd({over}) {
+        setParent(over ? over.id : null);
+    }
+
     return (
         <DndContext onDragEnd={handleDragEnd}>
             {!parent ? draggable : null}
@@ -23,8 +27,4 @@ export function Example() {
             </Droppable>
         </DndContext>
     );
-
-    function handleDragEnd({over}) {
-        setParent(over ? over.id : null);
-    }
 }

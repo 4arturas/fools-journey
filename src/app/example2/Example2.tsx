@@ -8,24 +8,23 @@ import {Draggable} from './Draggable';
 
 export function Example2()
 {
-const [parent, setParent] = useState(null);
+    const [parent, setParent] = useState( null );
+    const draggable = (
+        <Draggable id="draggable">
+            Drag Me
+        </Draggable>
+    )
 
-const draggable = (
-    <Draggable id="draggable">
-        Go ahead, drag me.
-    </Draggable>
-);
-
-return (
-    <DndContext onDragEnd={handleDragEnd}>
-        {!parent ? draggable : null}
-        <Droppable id="droppable">
-            {parent === "droppable" ? draggable : 'Drop here'}
-        </Droppable>
-    </DndContext>
-);
-
-function handleDragEnd({over}) {
-    setParent(over ? over.id : null);
-}
+    function handleDragEnd( {over} )
+    {
+        setParent( over ? over.id : null );
+    }
+    return (
+        <DndContext onDragEnd={handleDragEnd}>
+            {!parent?draggable:null}
+            <Droppable id="droppable">
+                {parent === "droppable" ? draggable : "Drop here" }
+            </Droppable>
+        </DndContext>
+    )
 }
