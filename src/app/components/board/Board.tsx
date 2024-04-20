@@ -1,18 +1,23 @@
-import {Card} from "@/app/components/card/Card";
-import {DECK, ECard} from "@/app/utils";
-import {Droppable} from "@/app/example/Droppable";
-import {DndContext} from "@dnd-kit/core";
-import {useEffect, useId, useState} from "react";
-import {Draggable} from "@/app/example/Draggable";
+import {
+    CARD_IMG_ARR,
+    CARD_BACK,
+    CARD_HEIGHT,
+    CARD_INDEX,
+    CARD_WIDTH,
+    DECK,
+    EArea,
+    AreaNames,
+    TAROT_NAMES
+} from "@/app/utils";
+import {DndContext, DragEndEvent} from "@dnd-kit/core";
+import React, {useId, useState} from "react";
 import {useMachine} from '@xstate/react';
 
 import './Board.css';
 import {machine} from "@/app/components/board/Board.machine";
-import {Example3} from "@/app/example3/Example3";
-import {Todo} from "@/app/example4/Todo";
-
-const CARD_WIDTH = 230;
-const CARD_HEIGHT = 350;
+import {CardDroppable} from "@/app/components/card/CardDroppable";
+import {BoardHeader1} from "@/app/components/board/BoardHeader1";
+import {BoardHeader2} from "@/app/components/board/BoardHeader2";
 
 export default function Board()
 {
@@ -21,102 +26,98 @@ export default function Board()
     const [parent, setParent] = useState(null);
     const id = useId();
 
-    const draggableFool = (
-        <Draggable id="draggableFool">
-            <Card key='fool' card={ECard.FOOL}/>
-        </Draggable>
-    )
-
-
-    // console.log( current );
     const [deck, setDeck] = useState(DECK.map( c => c));
-    const [fool, setFool] = useState<ECard | undefined>();
-    const [adventure0, setAdventure0] = useState<JSX.Element | undefined>();
-    const [adventure1, setAdventure1] = useState<JSX.Element | undefined>();
-    const [adventure2, setAdventure2] = useState<JSX.Element | undefined>();
-    const [adventure3, setAdventure3] = useState<JSX.Element | undefined>();
-    // const [shield, setShield] = useState<ECard | undefined>();
-    const adventureDroppableID0 = 'adventureDroppableID0';
-    const [adventureDroppable0, setAdventureDroppable0] = useState<string | null>(adventureDroppableID0);
+    const [fool, setFool] = useState<CARD_INDEX | undefined>();
+    const [adventure0, setAdventure0] = useState<null | CARD_INDEX>(null);
+    const [adventure1, setAdventure1] = useState<null | CARD_INDEX>(null);
+    const [adventure2, setAdventure2] = useState<null | CARD_INDEX>(null);
+    const [adventure3, setAdventure3] = useState<null | CARD_INDEX>(null);
+    // const [shield, setShield] = useState<CARD_INDEX | undefined>();
 
-    const adventureDroppableID1 = 'adventureDroppableID1';
-    const [adventureDroppable1, setAdventureDroppable1] = useState<string | null>(adventureDroppableID1);
+    const [wisdom, setWisdom] = useState<null | CARD_INDEX>(null);
+    const [shield, setShield] = useState<null | CARD_INDEX>(null);
+    const [sword, setSword] = useState<null | CARD_INDEX>(null);
+    const [satchel, setSatchel] = useState<null | CARD_INDEX>(null);
 
-    const adventureDroppableID2 = 'adventureDroppableID2';
-    const [adventureDroppable2, setAdventureDroppable2] = useState<string | null>(adventureDroppableID2);
-
-    const adventureDroppableID3 = 'adventureDroppableID3';
-    const [adventureDroppable3, setAdventureDroppable3] = useState<string | null>(adventureDroppableID3);
-
-    const wisdomDroppableID = 'wisdomDroppableID';
-    const [wisdomDroppable, setWisdomDroppable] = useState<string | null>(null);
-
-   const shieldDroppableID = 'shieldDroppableID';
-    const [shieldDroppable, setShieldDroppable] = useState<string | null>(null);
-
-    const swordDroppableID = 'swordDroppableID';
-    const [swordDroppable, setSwordDroppable] = useState<string | null>();
-
-    const satchelDroppableID = 'satchelDroppableID';
-    const [satchelDroppable, setSatchelDroppable] = useState<string | null>();
-
-    function handleDragEnd( { over } )
+    function handleDragEnd( e: DragEndEvent )
     {
-        console.log('over', over);
-        if ( !over ) return;
+        const over = e.over?.id ?? -1;
+        const active = e.active.data.current?.card ?? -1;
+        const parent = e.active.data.current?.parent ?? -1;
+        console.log('OVER', `"${AreaNames[Number(over)]} - ${over}"`, 'ACTIVE', `"${TAROT_NAMES[active]} - ${active}"`, 'PARENT', `"${AreaNames[parent]} - ${parent}"`);
 
-        setAdventureDroppable0(null);
-        setShieldDroppable(null);
-        setSwordDroppable(null);
-        setWisdomDroppable(null);
-
-        switch (over.id)
+        switch ( over )
         {
-            case adventureDroppableID0:
-                setAdventureDroppable0(over.id);
-                return;
-            case wisdomDroppableID:
-                setWisdomDroppable(over.id);
-                return;
-            case shieldDroppableID:
-                setShieldDroppable(over.id);
-                return;
-            case swordDroppableID:
-                setSwordDroppable(over.id);
-                return;
-            case satchelDroppableID:
-                setSatchelDroppable(over.id);
-                return;
+            case EArea.ADVENTURE0:
+                setAdventure0(active);
+                break;
+            case EArea.ADVENTURE1:
+                setAdventure1(active);
+                break;
+            case EArea.ADVENTURE2:
+                setAdventure2(active);
+                break;
+            case EArea.ADVENTURE3:
+                setAdventure3(active);
+                break;
+            case EArea.WISDOM:
+                setWisdom(active);
+                break;
+            case EArea.SHIELD:
+                setShield(active);
+                break;
+            case EArea.SWORD:
+                setSword(active);
+                break;
+            case EArea.SATCHEL:
+                setSatchel(active);
+                break;
+        }
+
+        switch ( parent)
+        {
+            case EArea.ADVENTURE0:
+                setAdventure0(null);
+                break;
+            case EArea.ADVENTURE1:
+                setAdventure1(null);
+                break;
+            case EArea.ADVENTURE2:
+                setAdventure2(null);
+                break;
+            case EArea.ADVENTURE3:
+                setAdventure3(null);
+                break;
+            case EArea.WISDOM:
+                setWisdom(null);
+                break;
+            case EArea.SHIELD:
+                setShield(null);
+                break;
+            case EArea.SWORD:
+                setSword(null);
+                break;
+            case EArea.SATCHEL:
+                setSatchel(null);
+                break;
         }
     }
 
-    function getRandomAdventureCard() : ECard
+    function getRandomAdventureCard() : CARD_INDEX
     {
         const adventureCard = deck[Math.floor(Math.random()*deck.length)];
-        console.log(adventureCard);
         const tmpArr = deck.filter( f => f.valueOf() !== adventureCard.valueOf() );
         setDeck(tmpArr);
         return adventureCard;
     }
-    function convert_ToDraggable(card:ECard, id:string) : JSX.Element
-    {
-        const adventureDraggable0 = (
-            <Draggable id={id}>
-                <Card card={card}/>
-            </Draggable>
-        );
-        return adventureDraggable0;
-    }
-    useEffect(() => {
-        // console.log('current', current.value);
+
+    React.useEffect(() => {
 
         if ( current.matches('START') )
         {
             console.log( 'START' );
             send( {type:'put_cards_into_start_position'});
         }
-
-
 
         if ( current.matches({ PUT_CARDS_INTO_PLACES: 'STACK_FUTURE' }) ) {
             send({type:'place_fool'})
@@ -125,20 +126,17 @@ export default function Board()
         if ( current.matches('PUT_CARDS_INTO_PLACES') ) {
             if ( current.matches({ PUT_CARDS_INTO_PLACES: 'FOOL' }) ) {
                 const foolCard = deck[0];
+                console.log( foolCard );
                 const tmpArr = deck.filter( f => f.valueOf() !== foolCard.valueOf());
                 setDeck(tmpArr);
                 setFool( foolCard );
                 send({type: 'place_adventure'})
             }
             if ( current.matches({ PUT_CARDS_INTO_PLACES: 'ADVENTURE' }) ) {
-                const a0 = getRandomAdventureCard();
-                setAdventure0(convert_ToDraggable(a0, 'adventureDraggable0'));
-                const a1 = getRandomAdventureCard();
-                setAdventure1(convert_ToDraggable(a1, 'adventureDraggable1'));
-                const a2 = getRandomAdventureCard();
-                setAdventure2(convert_ToDraggable(a2, 'adventureDraggable2'));
-                const a3 = getRandomAdventureCard();
-                setAdventure3(convert_ToDraggable(a3, 'adventureDraggable3'));
+                setAdventure0(getRandomAdventureCard());
+                setAdventure1(getRandomAdventureCard());
+                setAdventure2(getRandomAdventureCard());
+                setAdventure3(getRandomAdventureCard());
             }
         }
 
@@ -146,9 +144,6 @@ export default function Board()
 
     return (
         <>
-            <div>
-                <Todo/>
-            </div>
             <div>
                 Deck size: {deck.length}
             </div>
@@ -158,55 +153,27 @@ export default function Board()
                 onDragEnd={handleDragEnd}>
             <table style={{width:'1800px', height:'100%', margin: 'auto'}} border={1}>
                 <tbody>
-                <tr>
-                    <td style={{width: '300px'}}>
-                        <div>Past</div>
-                    </td>
-                    <td colSpan={6}>
-                        <div>Adventure</div>
-                    </td>
-                    <td style={{width: '300px'}}>
-                        <div>Future</div>
-                    </td>
-                </tr>
+                <BoardHeader1/>
                 <tr>
                     <td style={{width: '300px'}}>
                         <div>Past</div>
                     </td>
                     <td>Nothing</td>
-                    <td style={{width: `${CARD_WIDTH}px`}}>
-                        <Droppable id={adventureDroppableID0}>
-                            {adventureDroppable0 ? adventure0 : 'Drop here A0'}
-                        </Droppable>
-                    </td>
-                    <td style={{width: `${CARD_WIDTH}px`}}>
-                        <Droppable id={adventureDroppableID1}>
-                            {adventureDroppable1 ? adventure1 : 'Drop here A1'}
-                        </Droppable>
-                    </td>
-                    <td style={{width: `${CARD_WIDTH}px`}}>
-                        <Droppable id={adventureDroppableID2}>
-                            {adventureDroppable2 ? adventure2 : 'Drop here A2'}
-                        </Droppable>
-                    </td>
-                    <td style={{width: `${CARD_WIDTH}px`}}>
-                        <Droppable id={adventureDroppableID3}>
-                            {adventureDroppable3 ? adventure3 : 'Drop here A3'}
-                        </Droppable>
-                    </td>
+                    <CardDroppable area={EArea.ADVENTURE0} card={adventure0} />
+                    <CardDroppable area={EArea.ADVENTURE1} card={adventure1} />
+                    <CardDroppable area={EArea.ADVENTURE2} card={adventure2} />
+                    <CardDroppable area={EArea.ADVENTURE3} card={adventure3} />
                     <td>Nothing</td>
-                    <td style={{width: '300px'}}>
+                    <td>
                         <div className="container">
-                            <div className="box" style={{background: "red"}}></div>
-                            {/*{Array.from({length: cards}, (v, i) => {*/}
                             {deck.map((v, i) => {
                                 return (
                                     <div
                                         key={`span${i}`}
                                         className="box stack-top"
-                                        style={{paddingLeft: `${i * 1}px`, paddingTop: `${i * 1}px`}}
+                                        style={{paddingLeft: `${i}px`, paddingTop: `${i}px`}}
                                     >
-                                        <Card key={`future${i}`} card={ECard.BACK}/>
+                                        <img key={`future${i}`} src={CARD_BACK} style={{width: `${CARD_WIDTH}px`, height: `${CARD_HEIGHT}px`}} alt=""/>
                                     </div>)
                             })}
                         </div>
@@ -220,47 +187,27 @@ export default function Board()
                     <td colSpan={6}>
                         <table border={2} style={{width:'100%'}}>
                             <tbody>
+                            <BoardHeader2 CARD_WIDTH={CARD_WIDTH} />
                             <tr>
-                                <td style={{width: `${CARD_WIDTH}px`}}>
-                                    Wisdom
-                                </td>
-                                <td style={{width: `${CARD_WIDTH}px`}}>
-                                    Shield
-                                </td>
-                                <td style={{width: `${CARD_WIDTH-15}px`}}>
-                                    Hero
-                                </td>
-                                <td style={{width: `${CARD_WIDTH}px`}}>
-                                    Sword
-                                </td>
-                                <td style={{width: `${CARD_WIDTH}px`}}>
-                                    Satchel
-                                </td>
-                            </tr>
-                            <tr>
+                                <CardDroppable area={EArea.WISDOM} card={wisdom} />
+                                <CardDroppable area={EArea.SHIELD} card={shield} />
                                 <td>
-                                    <Droppable id={wisdomDroppableID}>
-                                        {wisdomDroppable === wisdomDroppableID ? adventure0 : "Drop pentacles here"}
-                                    </Droppable>
+                                    {!fool &&
+                                        <span style={{margin: 'auto'}}>
+                                            <img
+                                                key={`fullKey`}
+                                                src={CARD_IMG_ARR[CARD_INDEX.FOOL]}
+                                                style={{
+                                                    width: `${CARD_WIDTH}px`,
+                                                    height: `${CARD_HEIGHT}px`
+                                                }}
+                                                alt=""
+                                            />
+                                        </span>
+                                    }
                                 </td>
-                                <td>
-                                    <Droppable id={shieldDroppableID}>
-                                        {shieldDroppable === shieldDroppableID ? adventure0 : "Drop wands here"}
-                                    </Droppable>
-                                </td>
-                                <td>
-                                    {fool && <span style={{margin:'auto'}}><Card card={fool}/></span>}
-                                </td>
-                                <td>
-                                    <Droppable id={swordDroppableID}>
-                                        {swordDroppable === swordDroppableID ? adventure0 : "Drop swords here"}
-                                    </Droppable>
-                                </td>
-                                <td>
-                                    <Droppable id={satchelDroppableID}>
-                                        {satchelDroppable === satchelDroppableID ? adventure0 : "Drop satchel here"}
-                                    </Droppable>
-                                </td>
+                                <CardDroppable area={EArea.SWORD} card={sword}/>
+                                <CardDroppable area={EArea.SATCHEL} card={satchel}/>
                             </tr>
                             </tbody>
                         </table>

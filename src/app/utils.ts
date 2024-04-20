@@ -1,6 +1,9 @@
 const CARD_PATH = 'img/annak/';
 
-export enum ECard {
+export const CARD_WIDTH = 230;
+export const CARD_HEIGHT = 350;
+
+enum ECard2 {
     FOOL = `${CARD_PATH}00_fool.jpg`,
     MAGICIAN = `${CARD_PATH}01_magician.jpg`,
     HIGHPRIESTESS = `${CARD_PATH}02_highpriestess.jpg`,
@@ -82,86 +85,8 @@ export enum ECard {
     BACK = `img/back2.jpg`, // https://clipart-library.com/free/playing-card-back-png.html
 }
 
-export const DECK = [
-    ECard.FOOL,
-    ECard.MAGICIAN,
-    ECard.HIGHPRIESTESS,
-    ECard.EMPRESS,
-    ECard.EMPEROR,
-    ECard.HIGHPRIEST,
-    ECard.LOVERS,
-    ECard.CHARIOT,
-    ECard.JUSTICE,
-    ECard.HERMIT,
-    ECard.FORTUNE,
-    ECard.STRENGTH,
-    ECard.HANGEDMAN,
-    ECard.DEATH,
-    ECard.TEMPERANCE,
-    ECard.DEVIL,
-    ECard.TOWER,
-    ECard.STAR,
-    ECard.MOON,
-    ECard.SUN,
-    ECard.JUDGEMENT,
-    ECard.WORLD,
-    ECard.CUPS01,
-    ECard.CUPS02,
-    ECard.CUPS03,
-    ECard.CUPS04,
-    ECard.CUPS05,
-    ECard.CUPS06,
-    ECard.CUPS07,
-    ECard.CUPS08,
-    ECard.CUPS09,
-    ECard.CUPS10,
-    ECard.CUPS11,
-    ECard.CUPS12,
-    ECard.CUPS13,
-    ECard.CUPS14,
-    ECard.PENTACLES01,
-    ECard.PENTACLES02,
-    ECard.PENTACLES03,
-    ECard.PENTACLES04,
-    ECard.PENTACLES05,
-    ECard.PENTACLES06,
-    ECard.PENTACLES07,
-    ECard.PENTACLES08,
-    ECard.PENTACLES09,
-    ECard.PENTACLES10,
-    ECard.PENTACLES11,
-    ECard.PENTACLES12,
-    ECard.PENTACLES13,
-    ECard.PENTACLES14,
-    ECard.RODS01,
-    ECard.RODS02,
-    ECard.RODS03,
-    ECard.RODS04,
-    ECard.RODS05,
-    ECard.RODS06,
-    ECard.RODS07,
-    ECard.RODS08,
-    ECard.RODS09,
-    ECard.RODS10,
-    ECard.RODS11,
-    ECard.RODS12,
-    ECard.RODS13,
-    ECard.RODS14,
-    ECard.SWORDS01,
-    ECard.SWORDS02,
-    ECard.SWORDS03,
-    ECard.SWORDS04,
-    ECard.SWORDS05,
-    ECard.SWORDS06,
-    ECard.SWORDS07,
-    ECard.SWORDS08,
-    ECard.SWORDS09,
-    ECard.SWORDS10,
-    ECard.SWORDS11,
-    ECard.SWORDS12,
-    ECard.SWORDS13,
-    ECard.SWORDS14
-];
+
+export const CARD_BACK = `img/back2.jpg`; // https://clipart-library.com/free/playing-card-back-png.html
 
 export const enum CARD_INDEX {
     FOOL,
@@ -244,7 +169,7 @@ export const enum CARD_INDEX {
     SWORDS14
 }
 
-export const CARD_ARR = [
+export const CARD_IMG_ARR = [
     `${CARD_PATH}00_fool.jpg`,
     `${CARD_PATH}01_magician.jpg`,
     `${CARD_PATH}02_highpriestess.jpg`,
@@ -325,7 +250,88 @@ export const CARD_ARR = [
     `${CARD_PATH}swords14.jpg`
 ];
 
-const TAROT_NAMES = [
+export const DECK = [
+    CARD_INDEX.FOOL,
+    CARD_INDEX.MAGICIAN,
+    CARD_INDEX.HIGHPRIESTESS,
+    CARD_INDEX.EMPRESS,
+    CARD_INDEX.EMPEROR,
+    CARD_INDEX.HIGHPRIEST,
+    CARD_INDEX.LOVERS,
+    CARD_INDEX.CHARIOT,
+    CARD_INDEX.JUSTICE,
+    CARD_INDEX.HERMIT,
+    CARD_INDEX.FORTUNE,
+    CARD_INDEX.STRENGTH,
+    CARD_INDEX.HANGEDMAN,
+    CARD_INDEX.DEATH,
+    CARD_INDEX.TEMPERANCE,
+    CARD_INDEX.DEVIL,
+    CARD_INDEX.TOWER,
+    CARD_INDEX.STAR,
+    CARD_INDEX.MOON,
+    CARD_INDEX.SUN,
+    CARD_INDEX.JUDGEMENT,
+    CARD_INDEX.WORLD,
+    CARD_INDEX.CUPS01,
+    CARD_INDEX.CUPS02,
+    CARD_INDEX.CUPS03,
+    CARD_INDEX.CUPS04,
+    CARD_INDEX.CUPS05,
+    CARD_INDEX.CUPS06,
+    CARD_INDEX.CUPS07,
+    CARD_INDEX.CUPS08,
+    CARD_INDEX.CUPS09,
+    CARD_INDEX.CUPS10,
+    CARD_INDEX.CUPS11,
+    CARD_INDEX.CUPS12,
+    CARD_INDEX.CUPS13,
+    CARD_INDEX.CUPS14,
+    CARD_INDEX.PENTACLES01,
+    CARD_INDEX.PENTACLES02,
+    CARD_INDEX.PENTACLES03,
+    CARD_INDEX.PENTACLES04,
+    CARD_INDEX.PENTACLES05,
+    CARD_INDEX.PENTACLES06,
+    CARD_INDEX.PENTACLES07,
+    CARD_INDEX.PENTACLES08,
+    CARD_INDEX.PENTACLES09,
+    CARD_INDEX.PENTACLES10,
+    CARD_INDEX.PENTACLES11,
+    CARD_INDEX.PENTACLES12,
+    CARD_INDEX.PENTACLES13,
+    CARD_INDEX.PENTACLES14,
+    CARD_INDEX.RODS01,
+    CARD_INDEX.RODS02,
+    CARD_INDEX.RODS03,
+    CARD_INDEX.RODS04,
+    CARD_INDEX.RODS05,
+    CARD_INDEX.RODS06,
+    CARD_INDEX.RODS07,
+    CARD_INDEX.RODS08,
+    CARD_INDEX.RODS09,
+    CARD_INDEX.RODS10,
+    CARD_INDEX.RODS11,
+    CARD_INDEX.RODS12,
+    CARD_INDEX.RODS13,
+    CARD_INDEX.RODS14,
+    CARD_INDEX.SWORDS01,
+    CARD_INDEX.SWORDS02,
+    CARD_INDEX.SWORDS03,
+    CARD_INDEX.SWORDS04,
+    CARD_INDEX.SWORDS05,
+    CARD_INDEX.SWORDS06,
+    CARD_INDEX.SWORDS07,
+    CARD_INDEX.SWORDS08,
+    CARD_INDEX.SWORDS09,
+    CARD_INDEX.SWORDS10,
+    CARD_INDEX.SWORDS11,
+    CARD_INDEX.SWORDS12,
+    CARD_INDEX.SWORDS13,
+    CARD_INDEX.SWORDS14
+];
+
+export const TAROT_NAMES = [
     'The Fool',
     'The Magician',
     'The High Priestess',
@@ -405,3 +411,25 @@ const TAROT_NAMES = [
     'Queen of Pentacles',
     'King of Pentacles'
 ];
+
+export enum EArea {
+    ADVENTURE0,
+    ADVENTURE1,
+    ADVENTURE2,
+    ADVENTURE3,
+    WISDOM,
+    SHIELD,
+    SWORD,
+    SATCHEL
+}
+
+export const AreaNames = [
+    "Adventure0",
+    "Adventure1",
+    "Adventure2",
+    "Adventure3",
+    "Wisdom",
+    "Shield",
+    "Sword",
+    "Satchel"
+]
