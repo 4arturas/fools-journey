@@ -1,13 +1,13 @@
-import {AreaNames, CARD_HEIGHT, CARD_INDEX, CARD_WIDTH, EArea} from "@/app/utils";
+import {AreaNames, CARD_HEIGHT, ECard, CARD_WIDTH, EArea} from "@/app/utils";
 import {useDroppable} from "@dnd-kit/core";
 import {CardDraggable} from "@/app/components/card/CardDraggable";
 
 type Props = {
     area: EArea,
-    card: CARD_INDEX | null
+    cards: ECard[]
 }
 
-export const CardDroppable : React.FC<Props> = ({area, card}) => {
+export const CardDroppable : React.FC<Props> = ({area, cards}) => {
     const { setNodeRef, isOver } = useDroppable({
         id: area
     });
@@ -29,8 +29,12 @@ export const CardDroppable : React.FC<Props> = ({area, card}) => {
             ref={setNodeRef}
             style={style}
             >
-            {!card && AreaNames[area]}
-            {card && <CardDraggable card={card} parent={area}/>}
+            {!cards && AreaNames[area]}
+            {cards &&
+                cards.map( (card, idx) => {
+                    return <CardDraggable key={idx} card={card} parent={area}/>
+                })
+            }
         </td>
     )
 }

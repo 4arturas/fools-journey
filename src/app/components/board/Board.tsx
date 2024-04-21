@@ -1,13 +1,18 @@
 import {
-    CARD_IMG_ARR,
+    AreaNames,
     CARD_BACK,
     CARD_HEIGHT,
-    CARD_INDEX,
+    CARD_IMG_ARR,
     CARD_WIDTH,
     DECK,
     EArea,
-    AreaNames,
-    TAROT_NAMES
+    ECard,
+    PastAllowedCards,
+    SatchelAllowedCards,
+    ShieldAllowedCards,
+    SwordAllowedCards,
+    TAROT_NAMES,
+    WisdomAllowedCards
 } from "@/app/utils";
 import {DndContext, DragEndEvent} from "@dnd-kit/core";
 import React, {useId, useState} from "react";
@@ -18,6 +23,7 @@ import {machine} from "@/app/components/board/Board.machine";
 import {CardDroppable} from "@/app/components/card/CardDroppable";
 import {BoardHeader1} from "@/app/components/board/BoardHeader1";
 import {BoardHeader2} from "@/app/components/board/BoardHeader2";
+import {PastDroppable} from "@/app/components/card/PastDroppable";
 
 export default function Board()
 {
@@ -26,126 +32,200 @@ export default function Board()
     const [parent, setParent] = useState(null);
     const id = useId();
 
-    const [deck, setDeck] = useState(DECK.map( c => c));
-    const [fool, setFool] = useState<CARD_INDEX | undefined>();
-    const [adventure0, setAdventure0] = useState<null | CARD_INDEX>(null);
-    const [adventure1, setAdventure1] = useState<null | CARD_INDEX>(null);
-    const [adventure2, setAdventure2] = useState<null | CARD_INDEX>(null);
-    const [adventure3, setAdventure3] = useState<null | CARD_INDEX>(null);
+    const [future, setFuture] = useState<ECard[]>(DECK.map( c => c));
+    const [fool, setFool] = useState<ECard | null>(null);
+    const [adventure0, setAdventure0] = useState<ECard[]>([]);
+    const [adventure1, setAdventure1] = useState<ECard[]>([]);
+    const [adventure2, setAdventure2] = useState<ECard[]>([]);
+    const [adventure3, setAdventure3] = useState<ECard[]>([]);
     // const [shield, setShield] = useState<CARD_INDEX | undefined>();
 
-    const [wisdom, setWisdom] = useState<null | CARD_INDEX>(null);
-    const [shield, setShield] = useState<null | CARD_INDEX>(null);
-    const [sword, setSword] = useState<null | CARD_INDEX>(null);
-    const [satchel, setSatchel] = useState<null | CARD_INDEX>(null);
+    const [wisdom, setWisdom] = useState<ECard[]>([]);
+    const [shield, setShield] = useState<ECard[]>([]);
+    const [sword, setSword] = useState<ECard[]>([]);
+    const [satchel, setSatchel] = useState<ECard[]>([]);
+
+    const [past, setPast] = useState<ECard[]>([]);
+
+    const [message, setMessage] = useState<string>("");
+
+    const showMessage = (msg:string) :void =>
+    {
+        setMessage( msg );
+    }
 
     function handleDragEnd( e: DragEndEvent )
     {
-        const over = e.over?.id ?? -1;
+        const over = e.over?.id;
+        if ( !over )
+        {
+            showMessage("Over is undefined - do nothing");
+            return;
+        }
+
         const active = e.active.data.current?.card ?? -1;
         const parent = e.active.data.current?.parent ?? -1;
         console.log('OVER', `"${AreaNames[Number(over)]} - ${over}"`, 'ACTIVE', `"${TAROT_NAMES[active]} - ${active}"`, 'PARENT', `"${AreaNames[parent]} - ${parent}"`);
 
+
+
+        if ( parent === over )
+            return;
+
         switch ( over )
         {
             case EArea.ADVENTURE0:
-                setAdventure0(active);
+                setAdventure0([...adventure0, active]);
                 break;
             case EArea.ADVENTURE1:
-                setAdventure1(active);
+                setAdventure1([...adventure1, active]);
                 break;
             case EArea.ADVENTURE2:
-                setAdventure2(active);
+                setAdventure2([...adventure2, active]);
                 break;
             case EArea.ADVENTURE3:
-                setAdventure3(active);
+                setAdventure3([...adventure3, active]);
                 break;
             case EArea.WISDOM:
-                setWisdom(active);
+                if ( wisdom.length === 4 )
+                {
+                    showMessage( "Only 4 wisdom cards allowed")
+                    return;
+                }
+                if ( !WisdomAllowedCards.find(f => f === active ) )
+                {
+                    showMessage("Only Pentacles allowed here");
+                    return;
+                }
+                setWisdom([...wisdom, active]);
                 break;
             case EArea.SHIELD:
-                setShield(active);
+                if ( !ShieldAllowedCards.find(f => f === active ) )
+                {
+                    showMessage("Only Wands allowed here");
+                    return;
+                }
+                setShield([...shield, active]);
                 break;
             case EArea.SWORD:
-                setSword(active);
+                if ( !SwordAllowedCards.find(f => f === active ) )
+                {
+                    showMessage("Only Swords allowed here");
+                    return;
+                }
+                setSword([...sword, active]);
                 break;
             case EArea.SATCHEL:
-                setSatchel(active);
+                if ( satchel.length === 4 )
+                {
+                    showMessage( "Only 4 cards allowed in satchel");
+                    return;
+                }
+                if ( !SatchelAllowedCards.find( f => f === active ) )
+                    return;
+                setSatchel([...satchel, active]);
+                break;
+            case EArea.PAST:
+                if ( !PastAllowedCards.find( f => f === active ) )
+                {
+                    showMessage(`"${TAROT_NAMES[active]}" is not allowed move to the past - you must fight this adventure`);
+                    return;
+                }
+                showMessage( `${TAROT_NAMES[active]} went to past`);
+                setPast([...past, active] );
                 break;
         }
+
+        console.log(adventure0);
 
         switch ( parent)
         {
             case EArea.ADVENTURE0:
-                setAdventure0(null);
+                setAdventure0( adventure0.filter( f => f !== active ) );
                 break;
             case EArea.ADVENTURE1:
-                setAdventure1(null);
+                setAdventure1( adventure1.filter( f => f !== active ));
                 break;
             case EArea.ADVENTURE2:
-                setAdventure2(null);
+                setAdventure2( adventure2.filter( f => f !== active ));
                 break;
             case EArea.ADVENTURE3:
-                setAdventure3(null);
+                setAdventure3( adventure3.filter( f => f !== active ));
                 break;
             case EArea.WISDOM:
-                setWisdom(null);
+                setWisdom( wisdom.filter( f => f !== active ));
                 break;
             case EArea.SHIELD:
-                setShield(null);
+                setShield( shield.filter( f => f !== active ));
                 break;
             case EArea.SWORD:
-                setSword(null);
+                setSword( sword.filter( f => f !== active ));
                 break;
             case EArea.SATCHEL:
-                setSatchel(null);
+                setSatchel(satchel.filter( f => f !== active ));
                 break;
         }
     }
 
-    function getRandomAdventureCard() : CARD_INDEX
+    function getRandomAdventureCard() : ECard
     {
-        const adventureCard = deck[Math.floor(Math.random()*deck.length)];
-        const tmpArr = deck.filter( f => f.valueOf() !== adventureCard.valueOf() );
-        setDeck(tmpArr);
+        const adventureCard = future[Math.floor(Math.random()*future.length)];
+        const tmpArr = future.filter( f => f !== adventureCard );
+        setFuture(tmpArr);
         return adventureCard;
     }
 
+    enum EState {
+        START,
+        START_PLACE_FOOL,
+        START_PLACE_ADVENTURE0,
+        START_PLACE_ADVENTURE1,
+        START_PLACE_ADVENTURE2,
+        START_PLACE_ADVENTURE3,
+    }
+
+    const timeoutState = (state:EState, ms:number) =>
+    {
+        setTimeout(() => setState(state), ms );
+    }
+
+    const [state, setState] = React.useState<EState>(EState.START);
     React.useEffect(() => {
-
-        if ( current.matches('START') )
+        switch (state)
         {
-            console.log( 'START' );
-            send( {type:'put_cards_into_start_position'});
+            case EState.START:
+                timeoutState( EState.START_PLACE_FOOL, 50 );
+                break;
+            case EState.START_PLACE_FOOL:
+                const foolCard = future[0];
+                const tmpFuture = future.filter( f => f !== foolCard);
+                setFuture(tmpFuture);
+                setFool(foolCard);
+                timeoutState( EState.START_PLACE_ADVENTURE0, 50 );
+                break;
+            case EState.START_PLACE_ADVENTURE0:
+                setAdventure0([getRandomAdventureCard()]);
+                timeoutState( EState.START_PLACE_ADVENTURE1, 50 );
+                break;
+            case EState.START_PLACE_ADVENTURE1:
+                setAdventure1([getRandomAdventureCard()]);
+                timeoutState( EState.START_PLACE_ADVENTURE2, 50 );
+                break;
+            case EState.START_PLACE_ADVENTURE2:
+                setAdventure2([getRandomAdventureCard()]);
+                timeoutState( EState.START_PLACE_ADVENTURE3, 50 );
+                break;
+            case EState.START_PLACE_ADVENTURE3:
+                setAdventure3([getRandomAdventureCard()]);
+                // timeoutState( EState.START_PLACE_ADVENTURE3, 500 );
+                break;
         }
-
-        if ( current.matches({ PUT_CARDS_INTO_PLACES: 'STACK_FUTURE' }) ) {
-            send({type:'place_fool'})
-        }
-
-        if ( current.matches('PUT_CARDS_INTO_PLACES') ) {
-            if ( current.matches({ PUT_CARDS_INTO_PLACES: 'FOOL' }) ) {
-                const foolCard = deck[0];
-                console.log( foolCard );
-                const tmpArr = deck.filter( f => f.valueOf() !== foolCard.valueOf());
-                setDeck(tmpArr);
-                setFool( foolCard );
-                send({type: 'place_adventure'})
-            }
-            if ( current.matches({ PUT_CARDS_INTO_PLACES: 'ADVENTURE' }) ) {
-                setAdventure0(getRandomAdventureCard());
-                setAdventure1(getRandomAdventureCard());
-                setAdventure2(getRandomAdventureCard());
-                setAdventure3(getRandomAdventureCard());
-            }
-        }
-
-    }, [current]);
+    }, [state]);
 
     return (
         <>
             <div>
-                Deck size: {deck.length}
+                Deck size: {future.length}
             </div>
 
             <DndContext
@@ -156,20 +236,21 @@ export default function Board()
                 <BoardHeader1/>
                 <tr>
                     <td style={{width: '300px'}}>
-                        <div>Past</div>
+                        <PastDroppable cards={past} />
                     </td>
                     <td>Nothing</td>
-                    <CardDroppable area={EArea.ADVENTURE0} card={adventure0} />
-                    <CardDroppable area={EArea.ADVENTURE1} card={adventure1} />
-                    <CardDroppable area={EArea.ADVENTURE2} card={adventure2} />
-                    <CardDroppable area={EArea.ADVENTURE3} card={adventure3} />
+                    <CardDroppable area={EArea.ADVENTURE0} cards={adventure0}/>
+                    <CardDroppable area={EArea.ADVENTURE1} cards={adventure1}/>
+                    <CardDroppable area={EArea.ADVENTURE2} cards={adventure2}/>
+                    <CardDroppable area={EArea.ADVENTURE3} cards={adventure3}/>
                     <td>Nothing</td>
                     <td>
+                        {future.length}
                         <div className="container">
-                            {deck.map((v, i) => {
+                            {future.map((v, i) => {
                                 return (
                                     <div
-                                        key={`span${i}`}
+                                        key={`spanFuture${i}`}
                                         className="box stack-top"
                                         style={{paddingLeft: `${i}px`, paddingTop: `${i}px`}}
                                     >
@@ -180,7 +261,7 @@ export default function Board()
                     </td>
                 </tr>
 
-                <tr><td colSpan={8} style={{height:'80px'}}></td></tr>
+                <tr><td colSpan={8} style={{height:'80px'}}>{message}</td></tr>
 
                 <tr>
                     <td></td>
@@ -189,14 +270,14 @@ export default function Board()
                             <tbody>
                             <BoardHeader2 CARD_WIDTH={CARD_WIDTH} />
                             <tr>
-                                <CardDroppable area={EArea.WISDOM} card={wisdom} />
-                                <CardDroppable area={EArea.SHIELD} card={shield} />
+                                <CardDroppable area={EArea.WISDOM} cards={wisdom} />
+                                <CardDroppable area={EArea.SHIELD} cards={shield} />
                                 <td>
-                                    {!fool &&
+                                    {fool === ECard.FOOL &&
                                         <span style={{margin: 'auto'}}>
                                             <img
                                                 key={`fullKey`}
-                                                src={CARD_IMG_ARR[CARD_INDEX.FOOL]}
+                                                src={CARD_IMG_ARR[ECard.FOOL]}
                                                 style={{
                                                     width: `${CARD_WIDTH}px`,
                                                     height: `${CARD_HEIGHT}px`
@@ -206,8 +287,8 @@ export default function Board()
                                         </span>
                                     }
                                 </td>
-                                <CardDroppable area={EArea.SWORD} card={sword}/>
-                                <CardDroppable area={EArea.SATCHEL} card={satchel}/>
+                                <CardDroppable area={EArea.SWORD} cards={sword}/>
+                                <CardDroppable area={EArea.SATCHEL} cards={satchel}/>
                             </tr>
                             </tbody>
                         </table>

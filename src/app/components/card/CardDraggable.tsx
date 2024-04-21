@@ -1,10 +1,10 @@
-import {CARD_IMG_ARR, CARD_HEIGHT, CARD_INDEX, CARD_WIDTH, EArea} from "@/app/utils";
+import {CARD_IMG_ARR, CARD_HEIGHT, ECard, CARD_WIDTH, EArea, TAROT_NAMES, TAROT_SHORT_DESC} from "@/app/utils";
 import {useDraggable} from "@dnd-kit/core";
 import {CSS} from "@dnd-kit/utilities";
 import React from "react";
 
 type Props = {
-    card: CARD_INDEX,
+    card: ECard,
     parent: EArea
 }
 
@@ -34,7 +34,7 @@ export const CardDraggable : React.FC<Props> = ( { card, parent } ) =>
         >
             <img
                 src={CARD_IMG_ARR[card]}
-                title={'Card'}
+                title={`${TAROT_NAMES[card]} - ${TAROT_SHORT_DESC[card]}`}
                 style={{width: `${CARD_WIDTH}px`, height: `${CARD_HEIGHT}px`}}
                 alt=""
             />
