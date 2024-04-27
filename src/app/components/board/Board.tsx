@@ -2,7 +2,6 @@ import {
     AreaNames,
     CARD_BACK,
     CARD_HEIGHT,
-    CARD_IMG_ARR,
     CARD_WIDTH,
     DECK,
     EArea,
@@ -10,7 +9,7 @@ import {
     PastAllowedCards,
     SatchelAllowedCards,
     ShieldAllowedCards,
-    SwordAllowedCards,
+    SwordAllowedCards, TAROT_IMAGES,
     TAROT_NAMES,
     WisdomAllowedCards
 } from "@/app/utils";
@@ -57,7 +56,7 @@ export default function Board()
     function handleDragEnd( e: DragEndEvent )
     {
         const over = e.over?.id;
-        if ( !over )
+        if ( over === undefined )
         {
             showMessage("Over is undefined - do nothing");
             return;
@@ -231,53 +230,53 @@ export default function Board()
             <DndContext
                 id={id}
                 onDragEnd={handleDragEnd}>
-            <table style={{width:'1800px', height:'100%', margin: 'auto'}} border={1}>
-                <tbody>
-                <BoardHeader1/>
-                <tr>
-                    <td style={{width: '300px'}}>
-                        <PastDroppable cards={past} />
-                    </td>
-                    <td>Nothing</td>
-                    <CardDroppable area={EArea.ADVENTURE0} cards={adventure0}/>
-                    <CardDroppable area={EArea.ADVENTURE1} cards={adventure1}/>
-                    <CardDroppable area={EArea.ADVENTURE2} cards={adventure2}/>
-                    <CardDroppable area={EArea.ADVENTURE3} cards={adventure3}/>
-                    <td>Nothing</td>
-                    <td>
-                        {future.length}
-                        <div className="container">
-                            {future.map((v, i) => {
-                                return (
-                                    <div
-                                        key={`spanFuture${i}`}
-                                        className="box stack-top"
-                                        style={{paddingLeft: `${i}px`, paddingTop: `${i}px`}}
-                                    >
-                                        <img key={`future${i}`} src={CARD_BACK} style={{width: `${CARD_WIDTH}px`, height: `${CARD_HEIGHT}px`}} alt=""/>
-                                    </div>)
-                            })}
-                        </div>
-                    </td>
-                </tr>
+                <table style={{width:'1800px', height:'100%', margin: 'auto'}} border={1}>
+                    <tbody>
+                    <BoardHeader1/>
+                    <tr>
+                        <td style={{width: '300px'}}>
+                            <PastDroppable cards={past} />
+                        </td>
+                        <td>Nothing</td>
+                        <CardDroppable area={EArea.ADVENTURE0} cards={adventure0}/>
+                        <CardDroppable area={EArea.ADVENTURE1} cards={adventure1}/>
+                        <CardDroppable area={EArea.ADVENTURE2} cards={adventure2}/>
+                        <CardDroppable area={EArea.ADVENTURE3} cards={adventure3}/>
+                        <td>Nothing</td>
+                        <td>
+                            {future.length}
+                            <div className="container">
+                                {future.map((v, i) => {
+                                    return (
+                                        <div
+                                            key={`spanFuture${i}`}
+                                            className="box stack-top"
+                                            style={{paddingLeft: `${i}px`, paddingTop: `${i}px`}}
+                                        >
+                                            <img key={`future${i}`} src={CARD_BACK} style={{width: `${CARD_WIDTH}px`, height: `${CARD_HEIGHT}px`}} alt=""/>
+                                        </div>)
+                                })}
+                            </div>
+                        </td>
+                    </tr>
 
-                <tr><td colSpan={8} style={{height:'80px'}}>{message}</td></tr>
+                    <tr><td colSpan={8} style={{height:'80px'}}>{message}</td></tr>
 
-                <tr>
-                    <td></td>
-                    <td colSpan={6}>
-                        <table border={2} style={{width:'100%'}}>
-                            <tbody>
-                            <BoardHeader2 CARD_WIDTH={CARD_WIDTH} />
-                            <tr>
-                                <CardDroppable area={EArea.WISDOM} cards={wisdom} />
-                                <CardDroppable area={EArea.SHIELD} cards={shield} />
-                                <td>
-                                    {fool === ECard.FOOL &&
-                                        <span style={{margin: 'auto'}}>
+                    <tr>
+                        <td></td>
+                        <td colSpan={6}>
+                            <table border={2} style={{width:'100%'}}>
+                                <tbody>
+                                <BoardHeader2 CARD_WIDTH={CARD_WIDTH} />
+                                <tr>
+                                    <CardDroppable area={EArea.WISDOM} cards={wisdom} />
+                                    <CardDroppable area={EArea.SHIELD} cards={shield} />
+                                    <td>
+                                        {fool === ECard.FOOL &&
+                                            <span style={{margin: 'auto'}}>
                                             <img
                                                 key={`fullKey`}
-                                                src={CARD_IMG_ARR[ECard.FOOL]}
+                                                src={TAROT_IMAGES[ECard.FOOL]}
                                                 style={{
                                                     width: `${CARD_WIDTH}px`,
                                                     height: `${CARD_HEIGHT}px`
@@ -285,20 +284,20 @@ export default function Board()
                                                 alt=""
                                             />
                                         </span>
-                                    }
-                                </td>
-                                <CardDroppable area={EArea.SWORD} cards={sword}/>
-                                <CardDroppable area={EArea.SATCHEL} cards={satchel}/>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </td>
-                    <td></td>
-                </tr>
+                                        }
+                                    </td>
+                                    <CardDroppable area={EArea.SWORD} cards={sword}/>
+                                    <CardDroppable area={EArea.SATCHEL} cards={satchel}/>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                        <td></td>
+                    </tr>
 
 
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
             </DndContext>
         </>
     );
