@@ -4,8 +4,6 @@ import {
     CARD_HEIGHT,
     CARD_WIDTH,
     DECK,
-    EArea,
-    ECard,
     PastAllowedCards,
     SatchelAllowedCards,
     ShieldAllowedCards,
@@ -13,6 +11,7 @@ import {
     TAROT_NAMES,
     WisdomAllowedCards
 } from "@/app/utils";
+import {ECard} from "@/app/ECard";
 import {DndContext, DragEndEvent} from "@dnd-kit/core";
 import React, {useId, useState} from "react";
 import {useMachine} from '@xstate/react';
@@ -23,6 +22,9 @@ import {CardDroppable} from "@/app/components/card/CardDroppable";
 import {BoardHeader1} from "@/app/components/board/BoardHeader1";
 import {BoardHeader2} from "@/app/components/board/BoardHeader2";
 import {PastDroppable} from "@/app/components/card/PastDroppable";
+import {EArea} from "@/app/EArea";
+import {shieldRules} from "@/app/rules/shieldRules";
+import {adventureRules} from "@/app/rules/adventureRules";
 
 export default function Board()
 {
@@ -31,7 +33,7 @@ export default function Board()
     const [parent, setParent] = useState(null);
     const id = useId();
 
-    const [future, setFuture] = useState<ECard[]>(DECK.map( c => c));
+    const [future, setFuture] = useState<ECard[]>(DECK.map(c => c));
     const [fool, setFool] = useState<ECard | null>(null);
     const [adventure0, setAdventure0] = useState<ECard[]>([]);
     const [adventure1, setAdventure1] = useState<ECard[]>([]);
@@ -71,18 +73,43 @@ export default function Board()
         if ( parent === over )
             return;
 
+        let message: string | null = null;
         switch ( over )
         {
             case EArea.ADVENTURE0:
+                message = adventureRules( adventure0, active );
+                if ( message )
+                {
+                    showMessage( message )
+                    return;
+                }
                 setAdventure0([...adventure0, active]);
                 break;
             case EArea.ADVENTURE1:
+                message = adventureRules( adventure1, active );
+                if ( message )
+                {
+                    showMessage( message )
+                    return;
+                }
                 setAdventure1([...adventure1, active]);
                 break;
             case EArea.ADVENTURE2:
+                message = adventureRules( adventure2, active );
+                if ( message )
+                {
+                    showMessage( message )
+                    return;
+                }
                 setAdventure2([...adventure2, active]);
                 break;
             case EArea.ADVENTURE3:
+                message = adventureRules( adventure3, active );
+                if ( message )
+                {
+                    showMessage( message )
+                    return;
+                }
                 setAdventure3([...adventure3, active]);
                 break;
             case EArea.WISDOM:
@@ -99,9 +126,10 @@ export default function Board()
                 setWisdom([...wisdom, active]);
                 break;
             case EArea.SHIELD:
-                if ( !ShieldAllowedCards.find(f => f === active ) )
+                const shieldRulesMessage = shieldRules( shield, active );
+                if ( shieldRulesMessage )
                 {
-                    showMessage("Only Wands allowed here");
+                    showMessage( shieldRulesMessage );
                     return;
                 }
                 setShield([...shield, active]);
@@ -109,15 +137,15 @@ export default function Board()
             case EArea.SWORD:
                 if ( !SwordAllowedCards.find(f => f === active ) )
                 {
-                    showMessage("Only Swords allowed here");
+                    showMessage("Only Swords 2 to 10 allowed here");
                     return;
                 }
                 setSword([...sword, active]);
                 break;
             case EArea.SATCHEL:
-                if ( satchel.length === 4 )
+                if ( satchel.length === 3 )
                 {
-                    showMessage( "Only 4 cards allowed in satchel");
+                    showMessage( "Only 3 cards allowed in satchel");
                     return;
                 }
                 if ( !SatchelAllowedCards.find( f => f === active ) )

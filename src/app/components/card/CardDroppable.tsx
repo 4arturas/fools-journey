@@ -19,20 +19,38 @@ export const CardDroppable : React.FC<Props> = ({area, cards}) => {
     }*/
 
     const style = {
-        border: !isOver ? "2px solid green" : "2px solid red",
-        opacity: !isOver ? 1 : 0.5,
+        // border: !isOver ? "2px solid green" : "2px solid red",
+        // opacity: !isOver ? 1 : 0.5,
+        zIndex: isOver ? 1000 : 0,
         width: `${CARD_WIDTH}px`
     };
+
+    const paddingLeft = (idx:number): string =>
+    {
+        if ( idx == 0 ) return "0px";
+        return `${idx*10}px`
+    }
+
+    const paddingTop = (idx:number) : string =>
+    {
+        if ( idx == 0 ) return "0px";
+        return `${idx*20}px`
+    }
 
     return (
         <td
             ref={setNodeRef}
+            className="container"
             style={style}
             >
             {!cards && AreaNames[area]}
             {cards &&
                 cards.map( (card, idx) => {
-                    return <CardDraggable key={idx} card={card} parent={area}/>
+                    return (
+                        <span className="box stack-top" style={{paddingLeft: paddingLeft(idx), paddingTop: paddingTop(idx)}}>
+                            <CardDraggable key={idx} card={card} parent={area}/>
+                        </span>
+                    )
                 })
             }
         </td>

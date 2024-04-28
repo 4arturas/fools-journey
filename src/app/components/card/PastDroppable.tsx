@@ -1,6 +1,8 @@
-import {CARD_BACK, CARD_HEIGHT, CARD_WIDTH, EArea, ECard} from "@/app/utils";
+import {CARD_BACK, CARD_HEIGHT, CARD_WIDTH} from "@/app/utils";
 import {useDroppable} from "@dnd-kit/core";
 import React from "react";
+import {ECard} from "@/app/ECard";
+import {EArea} from "@/app/EArea";
 
 type Props = {
   cards: ECard[]
