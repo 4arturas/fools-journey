@@ -5,19 +5,19 @@ type Props = {
 }
 export const BoardHeader2 : React.FC<Props> = ( { CARD_WIDTH} ) =>
     <tr>
-        <td style={{width: `${CARD_WIDTH}px`}}>
+        <td style={{textAlign:'center', width: `${CARD_WIDTH}px`}}>
             Wisdom
         </td>
-        <td style={{width: `${CARD_WIDTH}px`}}>
+        <td style={{textAlign:'center', width: `${CARD_WIDTH}px`}}>
             Shield
         </td>
-        <td style={{width: `${CARD_WIDTH - 15}px`}}>
+        <td style={{textAlign:'center', width: `${CARD_WIDTH - 15}px`}}>
             Hero
         </td>
-        <td style={{width: `${CARD_WIDTH}px`}}>
+        <td style={{textAlign:'center', width: `${CARD_WIDTH}px`}}>
             Sword
         </td>
-        <td style={{width: `${CARD_WIDTH}px`}}>
+        <td style={{textAlign:'center', width: `${CARD_WIDTH}px`}}>
             Satchel
         </td>
     </tr>

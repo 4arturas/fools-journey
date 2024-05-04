@@ -1,18 +1,16 @@
 import {
-    AreaNames,
+    AreaNames, calculateAdventureCost,
     CARD_BACK,
     CARD_HEIGHT,
     CARD_WIDTH,
     DECK,
-    PastAllowedCards,
-    SatchelAllowedCards,
-    ShieldAllowedCards,
-    SwordAllowedCards, TAROT_IMAGES,
+    PastAllowedCards, TAROT_COST,
+    TAROT_IMAGES,
     TAROT_NAMES,
     WisdomAllowedCards
 } from "@/app/utils";
 import {ECard} from "@/app/ECard";
-import {DndContext, DragEndEvent} from "@dnd-kit/core";
+import {DndContext, DragEndEvent, DragStartEvent} from "@dnd-kit/core";
 import React, {useId, useState} from "react";
 import {useMachine} from '@xstate/react';
 
@@ -25,12 +23,14 @@ import {PastDroppable} from "@/app/components/card/PastDroppable";
 import {EArea} from "@/app/EArea";
 import {shieldRules} from "@/app/rules/shieldRules";
 import {adventureRules} from "@/app/rules/adventureRules";
+import {swordRules} from "@/app/rules/swordRules";
+import {satchelRules} from "@/app/rules/satchelRules";
+import {Counter} from "@/app/components/counter/Counter";
 
 export default function Board()
 {
     const [current, send] = useMachine(machine);
 
-    const [parent, setParent] = useState(null);
     const id = useId();
 
     const [future, setFuture] = useState<ECard[]>(DECK.map(c => c));
@@ -50,6 +50,7 @@ export default function Board()
 
     const [message, setMessage] = useState<string>("");
 
+
     const showMessage = (msg:string) :void =>
     {
         setMessage( msg );
@@ -66,7 +67,7 @@ export default function Board()
 
         const active = e.active.data.current?.card ?? -1;
         const parent = e.active.data.current?.parent ?? -1;
-        console.log('OVER', `"${AreaNames[Number(over)]} - ${over}"`, 'ACTIVE', `"${TAROT_NAMES[active]} - ${active}"`, 'PARENT', `"${AreaNames[parent]} - ${parent}"`);
+        // console.log('OVER', `"${AreaNames[Number(over)]} - ${over}"`, 'ACTIVE', `"${TAROT_NAMES[active]} - ${active}"`, 'PARENT', `"${AreaNames[parent]} - ${parent}"`);
 
 
 
@@ -126,30 +127,30 @@ export default function Board()
                 setWisdom([...wisdom, active]);
                 break;
             case EArea.SHIELD:
-                const shieldRulesMessage = shieldRules( shield, active );
-                if ( shieldRulesMessage )
+                message = shieldRules( shield, active );
+                if ( message )
                 {
-                    showMessage( shieldRulesMessage );
+                    showMessage( message );
                     return;
                 }
                 setShield([...shield, active]);
                 break;
             case EArea.SWORD:
-                if ( !SwordAllowedCards.find(f => f === active ) )
+                message = swordRules( sword, active );
+                if ( message )
                 {
-                    showMessage("Only Swords 2 to 10 allowed here");
+                    showMessage(message);
                     return;
                 }
                 setSword([...sword, active]);
                 break;
             case EArea.SATCHEL:
-                if ( satchel.length === 3 )
+                message = satchelRules( satchel, active );
+                if ( message )
                 {
-                    showMessage( "Only 3 cards allowed in satchel");
+                    showMessage(message);
                     return;
                 }
-                if ( !SatchelAllowedCards.find( f => f === active ) )
-                    return;
                 setSatchel([...satchel, active]);
                 break;
             case EArea.PAST:
@@ -163,15 +164,14 @@ export default function Board()
                 break;
         }
 
-        console.log(adventure0);
-
         switch ( parent)
         {
             case EArea.ADVENTURE0:
                 setAdventure0( adventure0.filter( f => f !== active ) );
                 break;
             case EArea.ADVENTURE1:
-                setAdventure1( adventure1.filter( f => f !== active ));
+                console.log(adventure1.filter( f => f !== active ))
+                setAdventure1( adventure1.filter( f => f !== active ) );
                 break;
             case EArea.ADVENTURE2:
                 setAdventure2( adventure2.filter( f => f !== active ));
@@ -192,6 +192,7 @@ export default function Board()
                 setSatchel(satchel.filter( f => f !== active ));
                 break;
         }
+
     }
 
     function getRandomAdventureCard() : ECard
@@ -231,74 +232,135 @@ export default function Board()
                 timeoutState( EState.START_PLACE_ADVENTURE0, 50 );
                 break;
             case EState.START_PLACE_ADVENTURE0:
-                setAdventure0([getRandomAdventureCard()]);
+                if ( adventure0.length === 0 )
+                    setAdventure0([getRandomAdventureCard()]);
                 timeoutState( EState.START_PLACE_ADVENTURE1, 50 );
                 break;
             case EState.START_PLACE_ADVENTURE1:
-                setAdventure1([getRandomAdventureCard()]);
+                if ( adventure1.length === 0 )
+                    setAdventure1([getRandomAdventureCard()]);
                 timeoutState( EState.START_PLACE_ADVENTURE2, 50 );
                 break;
             case EState.START_PLACE_ADVENTURE2:
-                setAdventure2([getRandomAdventureCard()]);
+                if ( adventure2.length === 0 )
+                    setAdventure2([getRandomAdventureCard()]);
                 timeoutState( EState.START_PLACE_ADVENTURE3, 50 );
                 break;
             case EState.START_PLACE_ADVENTURE3:
-                setAdventure3([getRandomAdventureCard()]);
+                if ( adventure3.length === 0 )
+                    setAdventure3([getRandomAdventureCard()]);
                 // timeoutState( EState.START_PLACE_ADVENTURE3, 500 );
                 break;
         }
     }, [state]);
 
+    const showAdventureCost = (cards:ECard[]) =>
+    {
+        if ( cards.length === 0 ) return <></>;
+        if ( cards.length === 1 ) return <div>{TAROT_COST[cards[0]]}</div>;
+        let resultStr = '';
+        let i;
+        for ( i = 0; i < cards.length-1; i++ )
+        {
+            resultStr += `${TAROT_COST[cards[i]]} - `;
+        }
+
+        const sum = calculateAdventureCost(cards);
+        return <div>{`${resultStr} ${TAROT_COST[cards[i]]} = ${sum}`}</div>;
+    }
+
+    const adventureLength = (cards:ECard[]) => {
+        // return <div>Adventure length: {cards.length}&nbsp;{cards.length}</div>
+        return ''
+    }
+
     return (
         <>
-            <div>
-                Deck size: {future.length}
-            </div>
+            <Counter/>
 
             <DndContext
                 id={id}
-                onDragEnd={handleDragEnd}>
+                onDragEnd={handleDragEnd}
+                onDragStart={ (event:DragStartEvent ) => {  }}
+                /*onDragMove?(event: DragMoveEvent): void;*/
+                /*onDragOver?(event: DragOverEvent): void;*/
+                /*onDragEnd?(event: DragEndEvent): void;*/
+                /*onDragCancel?():*/
+                >
                 <table style={{width:'1800px', height:'100%', margin: 'auto'}} border={1}>
                     <tbody>
                     <BoardHeader1/>
                     <tr>
                         <td style={{width: '300px'}}>
-                            <PastDroppable cards={past} />
+                            <PastDroppable cards={past}/>
                         </td>
-                        <td>Nothing</td>
-                        <CardDroppable area={EArea.ADVENTURE0} cards={adventure0}/>
-                        <CardDroppable area={EArea.ADVENTURE1} cards={adventure1}/>
-                        <CardDroppable area={EArea.ADVENTURE2} cards={adventure2}/>
-                        <CardDroppable area={EArea.ADVENTURE3} cards={adventure3}/>
-                        <td>Nothing</td>
-                        <td>
-                            {future.length}
-                            <div className="container">
-                                {future.map((v, i) => {
-                                    return (
-                                        <div
-                                            key={`spanFuture${i}`}
-                                            className="box stack-top"
-                                            style={{paddingLeft: `${i}px`, paddingTop: `${i}px`}}
-                                        >
-                                            <img key={`future${i}`} src={CARD_BACK} style={{width: `${CARD_WIDTH}px`, height: `${CARD_HEIGHT}px`}} alt=""/>
-                                        </div>)
-                                })}
-                            </div>
+                        <td style={{backgroundColor: 'lightblue'}}>&nbsp;</td>
+                        <td style={{width: `${CARD_WIDTH}px`}}>
+                            {adventureLength(adventure0)}
+                            <div>{showAdventureCost(adventure0)}</div>
+                            <CardDroppable area={EArea.ADVENTURE0} cards={adventure0}/>
                         </td>
+                        <td style={{width: `${CARD_WIDTH}px`}}>
+                            {adventureLength(adventure1)}
+                            <div>{showAdventureCost(adventure1)}</div>
+                            <CardDroppable area={EArea.ADVENTURE1} cards={adventure1}/>
+                        </td>
+                        <td style={{width: `${CARD_WIDTH}px`}}>
+                            {adventureLength(adventure2)}
+                            <div>{showAdventureCost(adventure2)}</div>
+                            <CardDroppable area={EArea.ADVENTURE2} cards={adventure2}/>
+                        </td>
+                        <td style={{width: `${CARD_WIDTH}px`}}>
+                            {adventureLength(adventure3)}
+                            <div>{showAdventureCost(adventure3)}</div>
+                            <CardDroppable area={EArea.ADVENTURE3} cards={adventure3}/>
+                        </td>
+                            <td style={{backgroundColor: 'lightblue'}}>&nbsp;</td>
+                            <td>
+                                {future.length}&nbsp;&nbsp;&nbsp;
+                                <button
+                                    style={{
+                                        cursor: 'pointer',
+                                        backgroundColor: ((adventure0.length + adventure1.length + adventure2.length + adventure3.length) > 1) ? 'lightgray' : 'red'
+                                    }}
+                                    disabled={(adventure0.length + adventure1.length + adventure2.length + adventure3.length) > 1}
+                                    onClick={() => timeoutState(EState.START_PLACE_ADVENTURE0, 50)}
+                                >
+                                    Reveal future
+                                </button>
+                                <div className="container">
+                                    {future.map((v, i) => {
+                                        return (
+                                            <div
+                                                key={`spanFuture${i}`}
+                                                className="box stack-top"
+                                                style={{paddingLeft: `${i}px`, paddingTop: `${i}px`}}
+                                            >
+                                                <img key={`future${i}`} src={CARD_BACK}
+                                                     style={{width: `${CARD_WIDTH}px`, height: `${CARD_HEIGHT}px`}}
+                                                     alt=""/>
+                                            </div>)
+                                    })}
+                                </div>
+                            </td>
                     </tr>
 
-                    <tr><td colSpan={8} style={{height:'80px'}}>{message}</td></tr>
+                    <tr>
+                    <td colSpan={8} style={{height:'80px'}}>{message}</td></tr>
 
                     <tr>
-                        <td></td>
+                        <td style={{backgroundColor: 'lightblue'}}>&nbsp;</td>
                         <td colSpan={6}>
-                            <table border={2} style={{width:'100%'}}>
-                                <tbody>
-                                <BoardHeader2 CARD_WIDTH={CARD_WIDTH} />
+                        <table border={2} style={{width:'100%'}}>
+                            <tbody>
+                            <BoardHeader2 CARD_WIDTH={CARD_WIDTH} />
                                 <tr>
-                                    <CardDroppable area={EArea.WISDOM} cards={wisdom} />
-                                    <CardDroppable area={EArea.SHIELD} cards={shield} />
+                                    <td style={{width: `${CARD_WIDTH}px`}}>
+                                        <CardDroppable area={EArea.WISDOM} cards={wisdom}/>
+                                    </td>
+                                    <td style={{width: `${CARD_WIDTH}px`}}>
+                                        <CardDroppable area={EArea.SHIELD} cards={shield}/>
+                                    </td>
                                     <td>
                                         {fool === ECard.FOOL &&
                                             <span style={{margin: 'auto'}}>
@@ -314,13 +376,17 @@ export default function Board()
                                         </span>
                                         }
                                     </td>
-                                    <CardDroppable area={EArea.SWORD} cards={sword}/>
-                                    <CardDroppable area={EArea.SATCHEL} cards={satchel}/>
+                                    <td style={{width: `${CARD_WIDTH}px`}}>
+                                        <CardDroppable area={EArea.SWORD} cards={sword}/>
+                                    </td>
+                                    <td style={{width: `${CARD_WIDTH}px`}}>
+                                        <CardDroppable area={EArea.SATCHEL} cards={satchel}/>
+                                    </td>
                                 </tr>
-                                </tbody>
-                            </table>
+                            </tbody>
+                        </table>
                         </td>
-                        <td></td>
+                        <td style={{backgroundColor: 'lightblue'}}>&nbsp;</td>
                     </tr>
 
 

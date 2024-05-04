@@ -100,40 +100,7 @@ export const VitalityBackCards : ECard[] = [
     ECard.CUPS09,
     ECard.CUPS10,
 ];
-export const SatchelAllowedCards = [
-    ...ShieldAllowedCards,
-    ...SwordAllowedCards,
-    ...VitalityBackCards,
-    ECard.SWORDS01,
-    ECard.SWORDS11,
-    ECard.SWORDS12,
-    ECard.SWORDS13,
-    ECard.SWORDS14,
 
-    ECard.WANDS01,
-    ECard.WANDS11,
-    ECard.WANDS12,
-    ECard.WANDS13,
-    ECard.WANDS14,
-
-    ECard.CUPS01,
-    ECard.CUPS02,
-    ECard.CUPS03,
-    ECard.CUPS04,
-    ECard.CUPS05,
-    ECard.CUPS06,
-    ECard.CUPS07,
-    ECard.CUPS08,
-    ECard.CUPS09,
-    ECard.CUPS10,
-    ECard.CUPS11,
-    ECard.CUPS12,
-    ECard.CUPS13,
-    ECard.CUPS14,
-
-    ECard.PENTACLES01,
-    ...WisdomAllowedCards
-];
 export const PastAllowedCards = [
     ...WisdomAllowedCards,
     ...ShieldAllowedCards,
@@ -316,3 +283,14 @@ for ( let i = 50; i <= 63; i++ )
 TAROT_CTX = 0;
 for ( let i = 64; i <= 77; i++ )
     TAROT_COST[i] = TAROT_CTX;
+
+export const calculateAdventureCost = (cards:ECard[]) =>
+{
+    if ( cards.length === 0 ) return 0;
+    if ( cards.length === 1 ) return TAROT_COST[cards[0]];
+    let amount = TAROT_COST[cards[0]];
+    for ( let i = 1; i < cards.length; i++ )
+        amount -= TAROT_COST[cards[i]];
+    // cards.reduce((partialSum, a) => TAROT_COST[a] - TAROT_COST[partialSum], 0)
+    return amount;
+}

@@ -1,6 +1,8 @@
-import {AreaNames, CARD_HEIGHT, ECard, CARD_WIDTH, EArea} from "@/app/utils";
+import {AreaNames, CARD_HEIGHT, CARD_WIDTH, TAROT_COST} from "@/app/utils";
 import {useDroppable} from "@dnd-kit/core";
 import {CardDraggable} from "@/app/components/card/CardDraggable";
+import {EArea} from "@/app/EArea";
+import {ECard} from "@/app/ECard";
 
 type Props = {
     area: EArea,
@@ -21,8 +23,9 @@ export const CardDroppable : React.FC<Props> = ({area, cards}) => {
     const style = {
         // border: !isOver ? "2px solid green" : "2px solid red",
         // opacity: !isOver ? 1 : 0.5,
-        zIndex: isOver ? 1000 : 0,
-        width: `${CARD_WIDTH}px`
+        // zIndex: isOver ? 1000 : 0,
+        width: `${CARD_WIDTH}px`,
+        height: `${CARD_HEIGHT}px`
     };
 
     const paddingLeft = (idx:number): string =>
@@ -38,21 +41,28 @@ export const CardDroppable : React.FC<Props> = ({area, cards}) => {
     }
 
     return (
-        <td
-            ref={setNodeRef}
-            className="container"
-            style={style}
+        <>
+            {/*{cards.length === 0 && AreaNames[area]}*/}
+
+            <div
+                ref={setNodeRef}
+                className="container"
+                style={style}
             >
-            {!cards && AreaNames[area]}
-            {cards &&
+            {cards.length > 0 &&
                 cards.map( (card, idx) => {
                     return (
-                        <span className="box stack-top" style={{paddingLeft: paddingLeft(idx), paddingTop: paddingTop(idx)}}>
+                        <span
+                        key={`cardDroppableContainer${idx}`}
+                            className="box stack-top"
+                            style={{paddingLeft: paddingLeft(idx), paddingTop: paddingTop(idx)}}
+                        >
                             <CardDraggable key={idx} card={card} parent={area}/>
                         </span>
                     )
                 })
             }
-        </td>
+            </div>
+        </>
     )
 }
