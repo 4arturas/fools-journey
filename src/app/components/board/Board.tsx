@@ -330,7 +330,9 @@ export default function Board()
                     <tbody>
                     <tr>
                         <td colSpan={8} style={{textAlign:"center"}}>
-                            <div style={{marginBottom:"10px", fontWeight:"bold"}}>The Fool's Journey</div>
+                            <div style={{marginBottom:"10px", fontWeight:"bold", textDecoration:"underline"}}>
+                                The Fool's Journey
+                            </div>
                         </td>
                     </tr>
                     <tr>
