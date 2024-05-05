@@ -15,7 +15,7 @@ export const PastDroppable : React.FC<Props> = ({cards}) =>
     });
 
     const style = {
-        border: !isOver ? "2px solid blue" : "2px solid red",
+        // border: !isOver ? "2px solid blue" : "2px solid red",
         opacity: !isOver ? 1 : 0.5,
         width: `${CARD_WIDTH}px`
     }

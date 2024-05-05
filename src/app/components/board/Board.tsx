@@ -195,12 +195,17 @@ export default function Board()
 
     }
 
+    function pullCardFromTheDeck(card:ECard) : ECard
+    {
+        const tmpArr = future.filter( f => f !== card );
+        setFuture(tmpArr);
+        return card;
+    }
+
     function getRandomAdventureCard() : ECard
     {
         const adventureCard = future[Math.floor(Math.random()*future.length)];
-        const tmpArr = future.filter( f => f !== adventureCard );
-        setFuture(tmpArr);
-        return adventureCard;
+        return pullCardFromTheDeck(adventureCard);
     }
 
     enum EState {
@@ -216,6 +221,8 @@ export default function Board()
     {
         setTimeout(() => setState(state), ms );
     }
+
+    const syntheticAdventure: ECard[] = [ECard.MAGICIAN, ECard.SWORDS02, ECard.PENTACLES01, ECard.CUPS01];
 
     const [state, setState] = React.useState<EState>(EState.START);
     React.useEffect(() => {
@@ -233,22 +240,42 @@ export default function Board()
                 break;
             case EState.START_PLACE_ADVENTURE0:
                 if ( adventure0.length === 0 )
-                    setAdventure0([getRandomAdventureCard()]);
+                {
+                    if ( syntheticAdventure.length > 0 && syntheticAdventure[0] )
+                        setAdventure0([syntheticAdventure[0]]);
+                    else
+                        setAdventure0([getRandomAdventureCard()]);
+                }
                 timeoutState( EState.START_PLACE_ADVENTURE1, 50 );
                 break;
             case EState.START_PLACE_ADVENTURE1:
                 if ( adventure1.length === 0 )
-                    setAdventure1([getRandomAdventureCard()]);
+                {
+                    if (syntheticAdventure.length > 0 && syntheticAdventure[1])
+                        setAdventure1([syntheticAdventure[1]]);
+                    else
+                        setAdventure1([getRandomAdventureCard()]);
+                }
                 timeoutState( EState.START_PLACE_ADVENTURE2, 50 );
                 break;
             case EState.START_PLACE_ADVENTURE2:
                 if ( adventure2.length === 0 )
-                    setAdventure2([getRandomAdventureCard()]);
+                {
+                    if ( syntheticAdventure.length > 0 && syntheticAdventure[2] )
+                        setAdventure2([syntheticAdventure[2]]);
+                    else
+                        setAdventure2([getRandomAdventureCard()]);
+                }
                 timeoutState( EState.START_PLACE_ADVENTURE3, 50 );
                 break;
             case EState.START_PLACE_ADVENTURE3:
                 if ( adventure3.length === 0 )
-                    setAdventure3([getRandomAdventureCard()]);
+                {
+                    if (syntheticAdventure.length > 0 && syntheticAdventure[3])
+                        setAdventure3([syntheticAdventure[3]]);
+                    else
+                        setAdventure3([getRandomAdventureCard()]);
+                }
                 // timeoutState( EState.START_PLACE_ADVENTURE3, 500 );
                 break;
         }
@@ -266,7 +293,19 @@ export default function Board()
         }
 
         const sum = calculateAdventureCost(cards);
-        return <div>{`${resultStr} ${TAROT_COST[cards[i]]} = ${sum}`}</div>;
+        const button = sum <= 0 ?
+            <button
+                style={{float: 'right'}}
+                onClick={() => {
+                    setPast([...past, ...cards]);
+                    setAdventure0( adventure0.filter( f => !cards.includes(f) ) );
+                }}
+            >
+                Move to the Past
+            </button>
+            :
+            <></>;
+        return <div>{`${resultStr} ${TAROT_COST[cards[i]]} = ${sum}`}{button}</div>;
     }
 
     const adventureLength = (cards:ECard[]) => {
@@ -287,16 +326,31 @@ export default function Board()
                 /*onDragEnd?(event: DragEndEvent): void;*/
                 /*onDragCancel?():*/
                 >
-                <table style={{width:'1800px', height:'100%', margin: 'auto'}} border={1}>
+                <table style={{width:'1800px', height:'100%', margin: 'auto'}} border={0}>
                     <tbody>
-                    <BoardHeader1/>
+                    <tr>
+                        <td colSpan={8} style={{textAlign:"center"}}>
+                            <div style={{marginBottom:"10px", fontWeight:"bold"}}>The Fool's Journey</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style={{textAlign: 'center', width: '300px'}}>
+                            <div>Past({past.length})</div>
+                        </td>
+                        <td colSpan={6} style={{textAlign: 'center'}}>
+                            <div>Adventure</div>
+                        </td>
+                        <td style={{textAlign: 'center', width: '300px'}}>
+                            <div>Future({future.length})</div>
+                        </td>
+                    </tr>
                     <tr>
                         <td style={{width: '300px'}}>
                             <PastDroppable cards={past}/>
                         </td>
-                        <td style={{backgroundColor: 'lightblue'}}>&nbsp;</td>
+                        <td style={{backgroundColor: 'lightblueNone'}}>&nbsp;</td>
                         <td style={{width: `${CARD_WIDTH}px`}}>
-                            {adventureLength(adventure0)}
+                        {adventureLength(adventure0)}
                             <div>{showAdventureCost(adventure0)}</div>
                             <CardDroppable area={EArea.ADVENTURE0} cards={adventure0}/>
                         </td>
@@ -315,9 +369,8 @@ export default function Board()
                             <div>{showAdventureCost(adventure3)}</div>
                             <CardDroppable area={EArea.ADVENTURE3} cards={adventure3}/>
                         </td>
-                            <td style={{backgroundColor: 'lightblue'}}>&nbsp;</td>
+                            <td style={{backgroundColor: 'lightblueNone'}}>&nbsp;</td>
                             <td>
-                                {future.length}&nbsp;&nbsp;&nbsp;
                                 <button
                                     style={{
                                         cursor: 'pointer',
@@ -349,13 +402,13 @@ export default function Board()
                     <td colSpan={8} style={{height:'80px'}}>{message}</td></tr>
 
                     <tr>
-                        <td style={{backgroundColor: 'lightblue'}}>&nbsp;</td>
+                        <td style={{backgroundColor: 'lightblueNone'}}>&nbsp;</td>
                         <td colSpan={6}>
-                        <table border={2} style={{width:'100%'}}>
+                        <table border={0} style={{width:'100%'}}>
                             <tbody>
                             <BoardHeader2 CARD_WIDTH={CARD_WIDTH} />
                                 <tr>
-                                    <td style={{width: `${CARD_WIDTH}px`}}>
+                                    <td style={{width: `${CARD_WIDTH}px`}} className="background-pattern">
                                         <CardDroppable area={EArea.WISDOM} cards={wisdom}/>
                                     </td>
                                     <td style={{width: `${CARD_WIDTH}px`}}>
@@ -369,8 +422,10 @@ export default function Board()
                                                 src={TAROT_IMAGES[ECard.FOOL]}
                                                 style={{
                                                     width: `${CARD_WIDTH}px`,
-                                                    height: `${CARD_HEIGHT}px`
+                                                    height: `${CARD_HEIGHT}px`,
+                                                    border: "1px solid black"
                                                 }}
+                                                className="card-shadow"
                                                 alt=""
                                             />
                                         </span>
@@ -386,7 +441,7 @@ export default function Board()
                             </tbody>
                         </table>
                         </td>
-                        <td style={{backgroundColor: 'lightblue'}}>&nbsp;</td>
+                        <td style={{backgroundColor: 'lightblueNone'}}>&nbsp;</td>
                     </tr>
 
 

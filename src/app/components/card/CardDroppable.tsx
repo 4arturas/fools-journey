@@ -24,6 +24,7 @@ export const CardDroppable : React.FC<Props> = ({area, cards}) => {
         // border: !isOver ? "2px solid green" : "2px solid red",
         // opacity: !isOver ? 1 : 0.5,
         // zIndex: isOver ? 1000 : 0,
+        // backgroundColor: isOver ? 'lightgray' : 'whitesmoke',
         width: `${CARD_WIDTH}px`,
         height: `${CARD_HEIGHT}px`
     };
@@ -46,7 +47,7 @@ export const CardDroppable : React.FC<Props> = ({area, cards}) => {
 
             <div
                 ref={setNodeRef}
-                className="container"
+                className={`container ${!isOver ? "background-pattern" : "background-pattern-over"}`}
                 style={style}
             >
             {cards.length > 0 &&

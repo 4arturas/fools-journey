@@ -14,3 +14,37 @@
 .stack-top{
     z-index: 9;
 }
+
+.card-shadow {
+    box-shadow: 4.0px 8.0px 8.0px hsl(0deg 0% 0% / 0.38)
+}
+
+
+/*https://www.magicpattern.design/tools/css-backgrounds*/
+.background-pattern {
+    opacity: 0.8;
+    background-image:  radial-gradient(#444cf7 0.5px, transparent 0.5px), radial-gradient(#444cf7 0.5px, whitesmoke 0.5px);
+    background-size: 20px 20px;
+    background-position: 0 0,10px 10px;
+}
+
+.background-pattern-over {
+    opacity: 0.8;
+    background-image:  radial-gradient(#444cf7 0.5px, transparent 0.5px), radial-gradient(#0812f1 0.5px, lightgray 0.5px);
+    background-size: 20px 20px;
+    background-position: 0 0,10px 10px;
+}
+
+.background-pattern2 {
+    opacity: 0.8;
+    background-image: radial-gradient(#444cf7 0.5px, whitesmoke 0.5px);
+    background-size: 10px 10px;
+}
+
+.background-pattern-over2 {
+    opacity: 0.8;
+    background-image: radial-gradient(#444cf7 0.5px, lightgray 0.5px);
+    background-size: 10px 10px;
+}
+
+

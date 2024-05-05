@@ -27,9 +27,11 @@ export const CardDraggable : React.FC<Props> = ( { card, parent } ) =>
 
     const style = {
         transform: CSS.Transform.toString( transform ),
-        // border: "1px solid red",
+        border: "1px solid black",
+        opacity: 1,
         width: `${CARD_WIDTH}px`,
-        height: `${CARD_HEIGHT}px`
+        height: `${CARD_HEIGHT}px`,
+        textShadow: "2px 2px"
     }
 
     return (
@@ -43,6 +45,7 @@ export const CardDraggable : React.FC<Props> = ( { card, parent } ) =>
                 src={TAROT_IMAGES[card]}
                 title={`${TAROT_NAMES[card]} - ${TAROT_SHORT_DESC[card]}`}
                 style={{width: `${CARD_WIDTH}px`, height: `${CARD_HEIGHT}px`}}
+                className="card-shadow"
                 alt=""
             />
         </div>
